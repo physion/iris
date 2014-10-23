@@ -35,8 +35,17 @@
                       emit([doc.db, doc.trigger_type], null);
                     }
                   }"
-                  }}))
-  )
+                  }})))
+
+(defn get-document
+  [db-name doc-id &{:keys [rev]}]
+  (if rev
+    (cl/get-document (database db-name) doc-id {:rev rev} #{:rev})
+    (cl/get-document (database db-name) doc-id)))
+
+(defn get-underworld-document
+  [doc-id]
+  (cl/get-document @db doc-id))
 
 ;(defn watched-state
 ;  [database-name]

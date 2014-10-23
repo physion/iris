@@ -19,7 +19,7 @@
                  (header "X-Aws-Sqsd-First-Received-At" "12-12-12")
                  (header "X-Aws-Sqsd-Receive-Count" "1")
                  (content-type "application/json")
-                 (body (json/write-str {:doc_id "doc" :doc_rev "doc-rev" :hook_id "hook"})))]
+                 (body (json/write-str {:doc_id "doc" :doc_rev "doc-rev" :hook_id "hook" :db "dbname"})))]
 
       (:status (handler/app post)) => 200
       (provided

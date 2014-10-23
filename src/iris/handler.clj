@@ -6,11 +6,8 @@
             [schema.coerce :as coerce]
             [iris.schema :refer [NewMessage]]
             [clojure.tools.logging :as logging]
-            [iris.logging]
             [iris.messages :as messages]))
 
-
-(iris.logging/setup!)
 
 ;; --- Routes --- ;;
 (defapi app
@@ -32,8 +29,6 @@
                        (assoc :sqs-msgid x-aws-sqsd-msgid)
                        (assoc :sqs-queue x-aws-sqsd-queue)
                        (assoc :sqs-first-received-at x-aws-sqsd-first-received-at)
-                       (assoc :sqs-receive-count (Integer/parseInt x-aws-sqsd-receive-count)))
-            result (messages/send msg-info)]
+                       (assoc :sqs-receive-count (Integer/parseInt x-aws-sqsd-receive-count)))]
 
-        (logging/debug result)
-        (ok result)))))
+        (ok (messages/send msg-info))))))

@@ -19,9 +19,12 @@
                  [com.ashafa/clutch "0.4.0"]
                  [com.cemerick/url "0.1.1"]                 ;; For clutch
 
+                 [http-kit "2.1.16"]
+                 [http-kit.fake "0.2.1"]
+
                  [com.newrelic.agent.java/newrelic-agent "3.11.0"] ;; NB Update javaagent string
                  [com.newrelic.agent.java/newrelic-api "3.11.0"] ;; NB Update javaagent string
-                 
+
                  [org.clojure/tools.logging "0.3.1"]
                  [clj-logging-config "1.9.12"]
                  [org.slf4j/slf4j-api "1.7.7"]

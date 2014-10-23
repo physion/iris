@@ -5,7 +5,9 @@
 
 (s/defschema NewMessage {:doc_id  s/Str
                          :doc_rev s/Str
+                         :db      s/Str
                          :hook_id s/Str})
+
 (s/defschema MessageInfo (-> NewMessage
                            (assoc :sqs-msgid s/Str)
                            (assoc :sqs-queue s/Str)
@@ -24,8 +26,10 @@
                       :api_key      s/Str                   ;; URL API Key
                       })
 
+
 (s/defschema NewReceipt {:type    "receipt"
                          :hook_id s/Str
                          :doc     s/Str
                          :doc_rev s/Str
                          })
+(s/defschema Receipt (assoc NewReceipt :_id s/Str :_rev s/Str))
