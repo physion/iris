@@ -1,8 +1,9 @@
-(ns osiris.logging
-  (:require [clj-logging-config.log4j :as log-config]))
+(ns iris.logging
+  (:require [clj-logging-config.log4j :as log-config]
+            [iris.config :refer [LOGGING_HOST]]))
 
 (defn setup! []
-  (if-let [log-host osiris.config/LOGGING_HOST]
+  (if-let [log-host LOGGING_HOST]
     (do
       (log-config/set-logger!
         :level :debug
