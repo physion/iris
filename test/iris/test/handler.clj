@@ -1,7 +1,8 @@
 (ns iris.test.handler
   (:require [midje.sweet :refer :all]
             [iris.handler :as handler]
-            [ring.mock.request :refer [request header content-type body]]))
+            [ring.mock.request :refer [request header content-type body]]
+            [clojure.data.json :as json]))
 
 (facts "About Iris"
   (fact "HEAD / => 200"
@@ -18,7 +19,7 @@
                  (header "X-Aws-Sqsd-First-Received-At" "12-12-12")
                  (header "X-Aws-Sqsd-Receive-Count" "1")
                  (content-type "application/json")
-                 (body "{\"database\" : \"my-database\"}"))]
+                 (body (json/write-str {:doc_id "doc" :doc_rev "doc-rev" :hook_id "hook"})))]
 
       (:status (handler/app post)) => 200
       (provided

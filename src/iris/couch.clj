@@ -11,8 +11,8 @@
     :username config/COUCH_USER
     :password config/COUCH_PASSWORD))
 
-
 (defonce ^{:private true} db (atom (database config/COUCH_DATABASE)))
+
 
 (def iris-design-doc "iris")
 
@@ -22,12 +22,7 @@
   (logging/debug "Checking database" (dissoc database :username :password))
   (cl/get-database database))
 
-; Web hooks are
-; {
-;   "type": "webhook",
-;   "trigger_type": <doc type>,
-;   "db": <db>
-; }
+
 (defn ensure-webhooks
   []
   (check-db @db)
