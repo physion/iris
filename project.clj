@@ -13,6 +13,8 @@
                  [metosin/ring-swagger-ui "2.0.17"]
                  [metosin/ring-http-response "0.5.0"]
 
+                 [slingshot "0.12.1"]
+
                  [ring/ring-codec "1.0.0"]
                  [org.clojure/data.json "0.2.5"]
 

@@ -18,10 +18,8 @@
         doc (couch/get-document db-name doc-id :rev doc-rev)
         hook (couch/get-underworld-document hook-id)]
 
-    (let [response (http/post (:url doc) {:body (json/write-str doc)})]
-
+    (let [response (http/post (:url hook) {:body (json/write-str doc)})]
       (if (.success? (get-type (:status @response)))
-
         {:type    "receipt"
          :db      db-name
          :doc_id  doc-id
