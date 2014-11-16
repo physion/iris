@@ -1,5 +1,4 @@
 (ns iris.test.messages
-  (:import (slingshot ExceptionInfo))
   (:require [midje.sweet :refer :all]
             [org.httpkit.client :as http]
             [org.httpkit.fake :refer [with-fake-http]]
@@ -7,17 +6,16 @@
             [iris.couch :as couch]))
 
 (facts "About Message sending" clj-stacktrace.utils
-  (fact "calls message url"
+  (fact "calls message url and saves receipt"
     (let [url "https://ovation.io/callback"]
       (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
-        (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => {:type    "receipt"
-                                                                                                  :db      ...db...
-                                                                                                  :doc_id  ...id...
-                                                                                                  :doc_rev ...rev...
-                                                                                                  :hook_id ...hook-id...}
+        (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
       (provided
         (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
-        (couch/get-underworld-document ...hook-id...) => {:url url})))
+        (couch/get-underworld-document ...hook-id...) => {:url url}
+        (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+        (couch/put-underworld-document anything) => ...receipt-doc...
+        ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
 
   (fact "throws exception if http call fails"
     (let [url "https://ovation.io/callback"
@@ -29,4 +27,10 @@
         (couch/get-underworld-document ...hook-id...) => {:url url})))
 
   (fact "Does not call url if receipt already in underworld database"
-    true => false))
+        (let [url "https://ovation.io/callback"]
+          (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
+                          (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => '(...receipt...)
+          (provided
+            (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
+            (couch/get-underworld-document ...hook-id...) => {:url url}
+            (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '(...receipt...)))))

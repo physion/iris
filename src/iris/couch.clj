@@ -23,19 +23,18 @@
   (cl/get-database database))
 
 
-(defn ensure-webhooks
+(defn receipts-view!
   []
   (check-db @db)
   (logging/debug "Creating webhooks view")
   (cl/save-view @db iris-design-doc
     (cl/view-server-fns :javascript
-      {:webhooks {:map
+      {:receipts {:map
                   "function(doc) {
-                    if(doc.type && doc.type==='webhook') {
-                      emit([doc.db, doc.trigger_type], null);
+                    if(doc.type && doc.type==='receipt') {
+                      emit([doc.db, doc.doc_id, doc.doc_rev, doc.hook_id], null);
                     }
-                  }"
-                  }})))
+                  }"}})))
 
 (defn get-document
   [db-name doc-id &{:keys [rev]}]
@@ -43,6 +42,17 @@
     (cl/get-document (database db-name) doc-id {:rev rev})
     (cl/get-document (database db-name) doc-id)))
 
+(defn put-underworld-document
+  [doc]
+  (cl/put-document @db doc))
+
+
 (defn get-underworld-document
   [doc-id]
   (cl/get-document @db doc-id))
+
+(defn get-receipts
+  "Checks if a receipt is present for a webhook call"
+  [db-name doc-id doc-rev hook-id]
+  (receipts-view!)
+  (cl/get-view @db iris-design-doc :receipts {:include_docs false} {:key [db-name doc-id doc-rev hook-id]}))
