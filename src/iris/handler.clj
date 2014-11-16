@@ -19,7 +19,7 @@
 
     (POST* "/messages" []
       :body [msg NewMessage]
-      :summary "Processes an update from Aker"
+      :summary "Processes an update from Osiris"
       :header-params [x-aws-sqsd-msgid :- s/Str
                       x-aws-sqsd-queue :- s/Str
                       x-aws-sqsd-first-received-at :- s/Str
