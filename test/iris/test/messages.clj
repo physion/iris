@@ -6,31 +6,47 @@
             [iris.couch :as couch]))
 
 (facts "About Message sending" clj-stacktrace.utils
-  (fact "calls message url and saves receipt"
-    (let [url "https://ovation.io/callback"]
-      (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
-        (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
-      (provided
-        (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
-        (couch/get-underworld-document ...hook-id...) => {:url url}
-        (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
-        (couch/put-underworld-document anything) => ...receipt-doc...
-        ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
+       (fact "calls message url and saves receipt"
+             (let [url "https://ovation.io/callback"]
+               (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
+                               (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
+               (provided
+                 (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
+                 (couch/get-underworld-document ...hook-id...) => {:url url}
+                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/put-underworld-document anything) => ...receipt-doc...
+                 ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
 
-  (fact "throws exception if http call fails"
-    (let [url "https://ovation.io/callback"
-          response {:status 400 :body "crap!"}]
-      (with-fake-http [{:url url :method :post} response]
-        (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => (throws anything)
-      (provided
-        (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
-        (couch/get-underworld-document ...hook-id...) => {:url url})))
+       (fact "throws exception if http call fails"
+             (let [url "https://ovation.io/callback"
+                   response {:status 400 :body "crap!"}]
+               (with-fake-http [{:url url :method :post} response]
+                               (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => (throws anything)
+               (provided
+                 (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
+                 (couch/get-underworld-document ...hook-id...) => {:url url})))
 
-  (fact "Does not call url if receipt already in underworld database"
-        (let [url "https://ovation.io/callback"]
-          (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
-                          (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => '(...receipt...)
-          (provided
-            (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
-            (couch/get-underworld-document ...hook-id...) => {:url url}
-            (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '(...receipt...)))))
+       (fact "substitutes target URL from mapped document"
+             (let [url-raw "https://ovation.io/callback/:project_id/update"
+                   project_id "123abc"
+                   url (str "https://ovation.io/callback/" project_id "/update")
+                   doc {:project_id project_id}]
+               (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
+                               (msg/send {:doc_id ...id...
+                                          :doc_rev ...rev...
+                                          :db ...db...
+                                          :hook_id ...hook-id...})) => ...receipt-doc...
+               (provided
+                 (couch/get-document ...db... ...id... :rev ...rev...) => doc
+                 (couch/get-underworld-document ...hook-id...) => {:url url-raw}
+                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/put-underworld-document anything) => ...receipt-doc...)))
+
+       (fact "Does not call url if receipt already in underworld database"
+             (let [url "https://ovation.io/callback"]
+               (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
+                               (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => '(...receipt...)
+               (provided
+                 (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
+                 (couch/get-underworld-document ...hook-id...) => {:url url}
+                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '(...receipt...)))))
