@@ -7,7 +7,8 @@
             [org.httpkit.client :as http]
             [clojure.data.json :as json]
             [clojure.tools.logging :as logging]
-            [clojure.string :as s]))
+            [clojure.string :as s]
+            [iris.mapping :as mapping]))
 
 (defn map-replace [m text]
   (reduce
@@ -17,6 +18,20 @@
 (defn substitute-url
   [url doc]
   (map-replace doc url))
+
+(defn substitute-map
+  [doc sub]
+  (into {} (map (fn [[fromkey tokey]]
+                  [tokey (doc fromkey)]) sub)))
+
+(defn map-doc
+  [doc hook]
+
+  (if-let [hook-substitution (:mapping hook)]
+    (substitute-map doc hook-substitution)
+    (if-let [substitution (mapping/get-mapping (:type doc))]
+      (substitute-map doc substitution)
+      doc)))
 
 (defn send
   [msg]
@@ -35,11 +50,11 @@
           (logging/info "Webhook " hook-id " already called")
           existing-receipt)
         ;; Take mapping from hook, if present. Otherwise, take it from mapping, if present
-        ;;TODO substitute URL from doc body.
         ;; TODO mapping from doc :type to a converted (i.e. Relationship => ovation.io update POST)
         (let [raw-url (:url hook)
-              url (substitute-url raw-url doc)
-              response (http/post url {:body (json/write-str doc)})]
+              mapped (map-doc doc hook)
+              url (substitute-url raw-url mapped)
+              response (http/post url {:body (json/write-str mapped)})]
           (if (.success? (get-type (:status @response)))
             (let [receipt {:type    "receipt"
                            :db      db-name
