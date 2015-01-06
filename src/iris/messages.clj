@@ -25,6 +25,7 @@
                   [tokey (doc fromkey)]) sub)))
 
 (defn map-doc
+  "Take mapping from hook, if present. Otherwise, take it from mapping, if present"
   [doc hook]
 
   (if-let [hook-substitution (:mapping hook)]
@@ -49,8 +50,6 @@
         (do
           (logging/info "Webhook " hook-id " already called")
           existing-receipt)
-        ;; Take mapping from hook, if present. Otherwise, take it from mapping, if present
-        ;; TODO mapping from doc :type to a converted (i.e. Relationship => ovation.io update POST)
         (let [raw-url (:url hook)
               mapped (map-doc doc hook)
               url (substitute-url raw-url mapped)
