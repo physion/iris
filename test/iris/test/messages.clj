@@ -9,7 +9,7 @@
   (:import (java.util UUID)))
 
 (facts "About Message sending" clj-stacktrace.utils
-       (fact "calls message url and saves receipt"
+       (fact "calls message url and saves receipt after succesful filter"
              (let [url "https://ovation.io/callback"]
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
@@ -20,13 +20,25 @@
                  (couch/put-underworld-document anything) => ...receipt-doc...
                  ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
 
-       (fact "calls message url and saves receipt after succesful filter"
+       (fact "calls message url and saves receipt"
              (let [url "https://ovation.io/callback"]
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
                  (couch/get-underworld-document ...hook-id...) => {:url url}
+                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/put-underworld-document anything) => ...receipt-doc...
+                 ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
+
+       (fact "uses hook api_key for basic auth when present"
+             (let [url "https://ovation.io/callback"
+                   api-key "secrect!"]
+               (with-fake-http [{:url url :method :post :basic-auth [api-key api-key]} {:status 201 :body "ok"}]
+                               (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
+               (provided
+                 (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
+                 (couch/get-underworld-document ...hook-id...) => {:url url :api_key api-key}
                  (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...
                  ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))

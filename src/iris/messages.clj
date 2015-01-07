@@ -36,8 +36,10 @@
 
 (defn post
   "POST a body to URL and record receipt or throw response exception"
-  [url body doc-id doc-rev db-name hook-id]
-  (let [response (http/post url {:body (json/write-str body)})]
+  [url body doc-id doc-rev db-name hook-id api-key]
+  (let [opts {:body (json/write-str body)}
+        auth-opts (if (nil? api-key) opts (assoc opts :basic-auth [api-key api-key]))
+        response (http/post url auth-opts)]
 
     (if (.success? (get-type (:status @response)))
       (let [receipt {:type    "receipt"
@@ -74,8 +76,8 @@
           existing-receipt)
         (let [raw-url (:url hook)
               mapped (map-doc doc hook)
-              url (substitute-url raw-url mapped)]      ;;TODO api_key from hook
+              url (substitute-url raw-url mapped)]
 
           (if (check-filter (:filter hook) mapped)
-            (post url mapped doc-id doc-rev db-name hook-id)
+            (post url mapped doc-id doc-rev db-name hook-id (:api_key hook))
             nil))))))
