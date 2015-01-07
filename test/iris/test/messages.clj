@@ -4,7 +4,9 @@
             [org.httpkit.fake :refer [with-fake-http]]
             [iris.messages :as msg]
             [iris.couch :as couch]
-            [iris.mapping :as mapping]))
+            [iris.mapping :as mapping]
+            [iris.messages :as messages])
+  (:import (java.util UUID)))
 
 (facts "About Message sending" clj-stacktrace.utils
        (fact "calls message url and saves receipt"
@@ -33,9 +35,9 @@
                    url (str "https://ovation.io/callback/" project_id "/update")
                    doc {:project_id project_id}]
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
-                               (msg/send {:doc_id ...id...
+                               (msg/send {:doc_id  ...id...
                                           :doc_rev ...rev...
-                                          :db ...db...
+                                          :db      ...db...
                                           :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => doc
@@ -49,12 +51,12 @@
                    url (str "https://ovation.io/callback/" project_id "/update")
                    type "MyType"
                    doc {:project_id project_id
-                        :type type}]
+                        :type       type}]
 
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
-                               (msg/send {:doc_id ...id...
+                               (msg/send {:doc_id  ...id...
                                           :doc_rev ...rev...
-                                          :db ...db...
+                                          :db      ...db...
                                           :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
                  (mapping/get-mapping type) => {:project_id :mapped_id}
@@ -70,12 +72,12 @@
                    url (str "https://ovation.io/callback/" project_id "/update")
                    type "MyType"
                    doc {:project_id project_id
-                        :type type}]
+                        :type       type}]
 
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
-                               (msg/send {:doc_id ...id...
+                               (msg/send {:doc_id  ...id...
                                           :doc_rev ...rev...
-                                          :db ...db...
+                                          :db      ...db...
                                           :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => doc
@@ -91,3 +93,24 @@
                  (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
                  (couch/get-underworld-document ...hook-id...) => {:url url}
                  (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '(...receipt...)))))
+
+
+(facts "About message mapping"
+       (fact "Maps Relationship to ovation.io update"
+             (let [entity-id (str (UUID/randomUUID))
+                   owner-id (str (UUID/randomUUID))
+                   doc {:_id       entity-id
+                        :_rev      "1-43492685ecdaafd5aa89458b1b577dc8",
+                        :rel       "experiments",
+                        :target_id "30925590-cf08-0131-805d-22000a7bab2e",
+                        :links     {"_collaboration_roots" ["0f1ad537-3868-456a-805e-9b2f9cc7499a"]}
+                        :source_id entity-id
+                        :type      "Relation"
+                        :user_id   owner-id}
+
+                   expected {:rel   "experiments"
+                             :owner owner-id
+                             :entity_id entity-id
+                             }]
+
+               (messages/map-doc doc {}) => expected)))
