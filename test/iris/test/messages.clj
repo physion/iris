@@ -15,7 +15,7 @@
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => {:foo "bar" :baz "yes!"}
-                 (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz #"yes!"]]}
+                 (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz "yes!"]]}
                  (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...
                  ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
@@ -135,10 +135,10 @@
              (msg/check-filter [] ...doc...) => true)
 
        (fact "passes matching filter"
-             (msg/check-filter [[:foo #"yes"]] {:bar "baz" :foo "yes"}) => true)
+             (msg/check-filter [[:foo "yes"]] {:bar "baz" :foo "yes"}) => true)
 
        (fact "rejects non-matching filter"
-             (msg/check-filter [[:foo #"no"]] {:bar "baz" :foo "yes"}) => false)
+             (msg/check-filter [[:foo "no"]] {:bar "baz" :foo "yes"}) => false)
 
        (fact "rejects message send for rejecting filter"
              (let [url "https://ovation.io/callback"]
@@ -146,4 +146,4 @@
                (provided
                  (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
                  (couch/get-document ...db... ...id... :rev ...rev...) => {:foo "bar" :baz "yes!"}
-                 (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz #"no!"]]}))))
+                 (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz "no!"]]}))))

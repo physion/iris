@@ -54,7 +54,7 @@
   [filter-list doc]
   (if (or (nil? filter) (empty? filter-list))
     true
-    (not (some nil? (map (fn [[k r]] (re-matches r (k doc))) filter-list)))))
+    (not (some nil? (map (fn [[k r]] (re-matches (re-pattern r) (k doc))) filter-list)))))
 
 (defn send
   [msg]
