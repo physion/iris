@@ -14,6 +14,17 @@
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
+                 (couch/get-document ...db... ...id... :rev ...rev...) => {:foo "bar" :baz "yes!"}
+                 (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz #"yes!"]]}
+                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/put-underworld-document anything) => ...receipt-doc...
+                 ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
+
+       (fact "calls message url and saves receipt after succesful filter"
+             (let [url "https://ovation.io/callback"]
+               (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
+                               (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
+               (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
                  (couch/get-underworld-document ...hook-id...) => {:url url}
                  (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
@@ -45,7 +56,7 @@
                  (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...)))
 
-       (fact "Maps doc from mapping"
+       (fact "maps doc from mapping"
              (let [url-raw "https://ovation.io/callback/:mapped_id/update"
                    project_id "123abc"
                    url (str "https://ovation.io/callback/" project_id "/update")
@@ -66,7 +77,7 @@
                  (couch/put-underworld-document anything) => ...receipt-doc...)))
 
 
-       (fact "Maps doc from hook document"
+       (fact "maps doc from hook document"
              (let [url-raw "https://ovation.io/callback/:hook_id/update"
                    project_id "123abc"
                    url (str "https://ovation.io/callback/" project_id "/update")
@@ -85,7 +96,7 @@
                  (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...)))
 
-       (fact "Does not call url if receipt already in underworld database"
+       (fact "does not call url if receipt already in underworld database"
              (let [url "https://ovation.io/callback"]
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => '(...receipt...)
@@ -96,7 +107,7 @@
 
 
 (facts "About message mapping"
-       (fact "Maps Relationship to ovation.io update"
+       (fact "maps Relation to ovation.io update"
              (let [entity-id (str (UUID/randomUUID))
                    owner-id (str (UUID/randomUUID))
                    doc {:_id       entity-id
@@ -114,3 +125,25 @@
                              }]
 
                (messages/map-doc doc {}) => expected)))
+
+
+(facts "About message filtering"
+       (fact "passes nil filter"
+             (msg/check-filter nil ...doc...) => true)
+
+       (fact "passes empty filter"
+             (msg/check-filter [] ...doc...) => true)
+
+       (fact "passes matching filter"
+             (msg/check-filter [[:foo #"yes"]] {:bar "baz" :foo "yes"}) => true)
+
+       (fact "rejects non-matching filter"
+             (msg/check-filter [[:foo #"no"]] {:bar "baz" :foo "yes"}) => false)
+
+       (fact "rejects message send for rejecting filter"
+             (let [url "https://ovation.io/callback"]
+               (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...}) => nil
+               (provided
+                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/get-document ...db... ...id... :rev ...rev...) => {:foo "bar" :baz "yes!"}
+                 (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz #"no!"]]}))))

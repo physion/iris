@@ -24,6 +24,7 @@
                       :db           s/Str                   ;; User database
                       :url          s/Str                   ;; Webhook URL
                       :api_key      s/Str                   ;; URL API Key
+                      (s/optional-key :filter) [s/Keyword s/Str] ;; filter field key and regex
                       })
 
 

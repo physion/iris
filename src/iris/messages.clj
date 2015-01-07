@@ -34,6 +34,28 @@
       (substitute-map doc substitution)
       doc)))
 
+(defn post
+  "POST a body to URL and record receipt or throw response exception"
+  [url body doc-id doc-rev db-name hook-id]
+  (let [response (http/post url {:body (json/write-str body)})]
+
+    (if (.success? (get-type (:status @response)))
+      (let [receipt {:type    "receipt"
+                     :db      db-name
+                     :doc_id  doc-id
+                     :doc_rev doc-rev
+                     :hook_id hook-id}]
+        (logging/info "Recording receipt: " receipt)
+        (couch/put-underworld-document (assoc receipt :_id (str "receipt-" (java.util.UUID/randomUUID)))))
+      (throw! @response))))
+
+(defn check-filter
+  "Check a set of filters against doc"
+  [filter-list doc]
+  (if (or (nil? filter) (empty? filter-list))
+    true
+    (not (some nil? (map (fn [[k r]] (re-matches r (k doc))) filter-list)))))
+
 (defn send
   [msg]
   (let [{doc-id  :doc_id
@@ -52,14 +74,8 @@
           existing-receipt)
         (let [raw-url (:url hook)
               mapped (map-doc doc hook)
-              url (substitute-url raw-url mapped)
-              response (http/post url {:body (json/write-str mapped)})]
-          (if (.success? (get-type (:status @response)))
-            (let [receipt {:type    "receipt"
-                           :db      db-name
-                           :doc_id  doc-id
-                           :doc_rev doc-rev
-                           :hook_id hook-id}]
-              (logging/info "Recording receipt: " receipt)
-              (couch/put-underworld-document (assoc receipt :_id (str "receipt-" (java.util.UUID/randomUUID)))))
-            (throw! @response)))))))
+              url (substitute-url raw-url mapped)]      ;;TODO api_key from hook
+
+          (if (check-filter (:filter hook) mapped)
+            (post url mapped doc-id doc-rev db-name hook-id)
+            nil))))))
