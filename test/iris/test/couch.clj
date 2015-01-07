@@ -13,9 +13,9 @@
         (cl/get-database db) => ...meta...))))
 
 (facts "About receipts"
-       (fact "Retrieves receipt by [db,doc_id,doc_rev,hook_id]"
-             (get-receipts ...db...  ...doc-id... ...doc-rev... ...hook-id...) => ...result...
+       (fact "Retrieves receipt by [doc_id,doc_rev,hook_id]"
+             (get-receipts ...doc-id... ...doc-rev... ...hook-id...) => ...result...
              (provided
                (check-db anything) => true
                (cl/save-view anything iris-design-doc anything) => true
-               (cl/get-view anything "iris"  :receipts {:include_docs false} {:key [...db... ...doc-id... ...doc-rev... ...hook-id...]}) => ...result...)))
+               (cl/get-view anything "iris"  :receipts {:include_docs false} {:key [...doc-id... ...doc-rev... ...hook-id...]}) => ...result...)))

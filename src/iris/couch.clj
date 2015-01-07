@@ -5,11 +5,14 @@
 
 
 (defn database
-  "Constructs a database URL for the given database name. Other parameters are pulled from config."
-  [db-name]
+  "Constructs a database URL for the given database name."
+  [db-name & {:keys [username password]
+              :or {username config/COUCH_USER
+                   password config/COUCH_PASSWORD}}]
+
   (assoc (cemerick.url/url config/COUCH_HOST db-name)
-    :username config/COUCH_USER
-    :password config/COUCH_PASSWORD))
+    :username username
+    :password password))
 
 (defonce ^{:private true} db (atom (database config/COUCH_DATABASE)))
 
@@ -32,7 +35,7 @@
       {:receipts {:map
                   "function(doc) {
                     if(doc.type && doc.type==='receipt') {
-                      emit([doc.db, doc.doc_id, doc.doc_rev, doc.hook_id], null);
+                      emit([doc.doc_id, doc.doc_rev, doc.hook_id], null);
                     }
                   }"}})))
 
@@ -53,6 +56,6 @@
 
 (defn get-receipts
   "Checks if a receipt is present for a webhook call"
-  [db-name doc-id doc-rev hook-id]
+  [doc-id doc-rev hook-id]
   (receipts-view!)
-  (cl/get-view @db iris-design-doc :receipts {:include_docs false} {:key [db-name doc-id doc-rev hook-id]}))
+  (cl/get-view @db iris-design-doc :receipts {:include_docs false} {:key [doc-id doc-rev hook-id]}))

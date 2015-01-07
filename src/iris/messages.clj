@@ -8,7 +8,8 @@
             [clojure.data.json :as json]
             [clojure.tools.logging :as logging]
             [clojure.string :as s]
-            [iris.mapping :as mapping]))
+            [iris.mapping :as mapping])
+  (:import (java.util UUID)))
 
 (defn map-replace [m text]
   (reduce
@@ -48,7 +49,7 @@
                      :doc_rev doc-rev
                      :hook_id hook-id}]
         (logging/info "Recording receipt: " receipt)
-        (couch/put-underworld-document (assoc receipt :_id (str "receipt-" (java.util.UUID/randomUUID)))))
+        (couch/put-underworld-document (assoc receipt :_id (str "receipt-" (UUID/randomUUID)))))
       (throw! @response))))
 
 (defn check-filter
@@ -68,7 +69,7 @@
         doc (couch/get-document db-name doc-id :rev doc-rev)
         hook (couch/get-underworld-document hook-id)]
 
-    (let [existing-receipt (couch/get-receipts db-name doc-id doc-rev hook-id)]
+    (let [existing-receipt (couch/get-receipts doc-id doc-rev hook-id)]
 
       (if (seq existing-receipt)
         (do
@@ -78,6 +79,5 @@
               mapped (map-doc doc hook)
               url (substitute-url raw-url mapped)]
 
-          (if (check-filter (:filter hook) mapped)
-            (post url mapped doc-id doc-rev db-name hook-id (:api_key hook))
-            nil))))))
+          (when (check-filter (:filter hook) mapped)
+            (post url mapped doc-id doc-rev db-name hook-id (:api_key hook))))))))

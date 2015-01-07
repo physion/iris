@@ -16,7 +16,7 @@
                (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => {:foo "bar" :baz "yes!"}
                  (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz "yes!"]]}
-                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...
                  ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
 
@@ -27,7 +27,7 @@
                (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
                  (couch/get-underworld-document ...hook-id...) => {:url url}
-                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...
                  ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
 
@@ -39,7 +39,7 @@
                (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
                  (couch/get-underworld-document ...hook-id...) => {:url url :api_key api-key}
-                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...
                  ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
 
@@ -65,7 +65,7 @@
                (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => doc
                  (couch/get-underworld-document ...hook-id...) => {:url url-raw}
-                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...)))
 
        (fact "maps doc from mapping"
@@ -85,7 +85,7 @@
                  (mapping/get-mapping type) => {:project_id :mapped_id}
                  (couch/get-document ...db... ...id... :rev ...rev...) => doc
                  (couch/get-underworld-document ...hook-id...) => {:url url-raw}
-                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...)))
 
 
@@ -105,7 +105,7 @@
                (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => doc
                  (couch/get-underworld-document ...hook-id...) => {:url url-raw :mapping {:project_id :hook_id}}
-                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...)))
 
        (fact "does not call url if receipt already in underworld database"
@@ -115,7 +115,7 @@
                (provided
                  (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
                  (couch/get-underworld-document ...hook-id...) => {:url url}
-                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '(...receipt...)))))
+                 (couch/get-receipts ...id... ...rev... ...hook-id...) => '(...receipt...)))))
 
 
 (facts "About message mapping"
@@ -156,6 +156,6 @@
              (let [url "https://ovation.io/callback"]
                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...}) => nil
                (provided
-                 (couch/get-receipts ...db... ...id... ...rev... ...hook-id...) => '()
+                 (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/get-document ...db... ...id... :rev ...rev...) => {:foo "bar" :baz "yes!"}
                  (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz "no!"]]}))))
