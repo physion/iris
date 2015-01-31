@@ -122,10 +122,11 @@
        (fact "maps Relation to ovation.io update"
              (let [entity-id (str (UUID/randomUUID))
                    owner-id (str (UUID/randomUUID))
+                   target-id (str (UUID/randomUUID))
                    doc {:_id       entity-id
                         :_rev      "1-43492685ecdaafd5aa89458b1b577dc8",
                         :rel       "experiments",
-                        :target_id "30925590-cf08-0131-805d-22000a7bab2e",
+                        :target_id target-id,
                         :links     {"_collaboration_roots" ["0f1ad537-3868-456a-805e-9b2f9cc7499a"]}
                         :source_id entity-id
                         :type      "Relation"
@@ -134,6 +135,7 @@
                    expected {:rel   "experiments"
                              :owner owner-id
                              :entity_id entity-id
+                             :target_id target-id
                              }]
 
                (messages/map-doc doc {}) => expected)))
