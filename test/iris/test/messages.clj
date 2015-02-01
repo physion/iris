@@ -1,6 +1,5 @@
 (ns iris.test.messages
   (:require [midje.sweet :refer :all]
-            [org.httpkit.client :as http]
             [org.httpkit.fake :refer [with-fake-http]]
             [iris.messages :as msg]
             [iris.couch :as couch]
@@ -9,7 +8,7 @@
   (:import (java.util UUID)))
 
 (facts "About Message sending" clj-stacktrace.utils
-       (fact "calls message url and saves receipt after succesful filter"
+       (fact "POSTs to message url and saves receipt after succesful filter"
              (let [url "https://ovation.io/callback"]
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
@@ -20,7 +19,18 @@
                  (couch/put-underworld-document anything) => ...receipt-doc...
                  ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
 
-       (fact "calls message url and saves receipt"
+       (fact "DELETEs message url for deleted document "
+             (let [url "https://ovation.io/callback"]
+               (with-fake-http [{:url url :method :delete} {:status 201 :body "ok"}]
+                               (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id... :deleted true})) => ...receipt-doc...
+               (provided
+                 (couch/get-document ...db... ...id... :rev ...rev...) => {:foo "bar" :baz "yes!"}
+                 (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz "yes!"]]}
+                 (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
+                 (couch/put-underworld-document anything) => ...receipt-doc...
+                 ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
+
+       (fact "POSTS to message url and saves receipt"
              (let [url "https://ovation.io/callback"]
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...

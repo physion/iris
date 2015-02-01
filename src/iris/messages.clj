@@ -35,12 +35,12 @@
       (substitute-map doc substitution)
       doc)))
 
-(defn post
-  "POST a body to URL and record receipt or throw response exception"
-  [url body doc-id doc-rev db-name hook-id api-key]
+(defn call-http
+  "Call an HTTP method with a body to URL and record receipt or throw response exception"
+  [method url body doc-id doc-rev db-name hook-id api-key]
   (let [opts {:body (json/write-str body)}
         auth-opts (if (nil? api-key) opts (assoc opts :basic-auth [api-key api-key]))
-        response (http/post url auth-opts)]
+        response (method url auth-opts)]
 
     (if (.success? (get-type (:status @response)))
       (let [receipt {:type    "receipt"
@@ -80,4 +80,5 @@
               url (substitute-url raw-url mapped)]
 
           (when (check-filter (:filter hook) mapped)
-            (post url mapped doc-id doc-rev db-name hook-id (:api_key hook))))))))
+            (let [method (if (:deleted msg) Iris phttp/delete http/post)]
+              (call-http method url mapped doc-id doc-rev db-name hook-id (:api_key hook)))))))))
