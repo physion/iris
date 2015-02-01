@@ -80,5 +80,5 @@
               url (substitute-url raw-url mapped)]
 
           (when (check-filter (:filter hook) mapped)
-            (let [method (if (:deleted msg) Iris phttp/delete http/post)]
+            (let [method (if (:deleted msg) http/delete http/post)]
               (call-http method url mapped doc-id doc-rev db-name hook-id (:api_key hook)))))))))
