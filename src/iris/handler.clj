@@ -31,5 +31,5 @@
                        (assoc :sqs-first-received-at x-aws-sqsd-first-received-at)
                        (assoc :sqs-receive-count (Integer/parseInt x-aws-sqsd-receive-count)))]
 
-        (logging/info "Sending message " msg)
+        (logging/info "Received message " msg)
         (ok (messages/send msg-info))))))
