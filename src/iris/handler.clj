@@ -25,12 +25,13 @@
                                           x-aws-sqsd-first-received-at :- s/Str
                                           x-aws-sqsd-receive-count :- s/Str]
 
-
-                          (let [msg-info (-> msg
-                                             (assoc :sqs-msgid x-aws-sqsd-msgid)
-                                             (assoc :sqs-queue x-aws-sqsd-queue)
-                                             (assoc :sqs-first-received-at x-aws-sqsd-first-received-at)
-                                             (assoc :sqs-receive-count (Integer/parseInt x-aws-sqsd-receive-count)))]
+                          ;(-> msg
+                          ;(assoc :sqs-msgid x-aws-sqsd-msgid)
+                          ;(assoc :sqs-queue x-aws-sqsd-queue)
+                          ;(assoc :sqs-first-received-at x-aws-sqsd-first-received-at)
+                          ;(assoc :sqs-receive-count (Integer/parseInt x-aws-sqsd-receive-count)))
+                          
+                          (let [msg-info msg]
 
                             (logging/info "[Iris] Update received" msg-info)
 
