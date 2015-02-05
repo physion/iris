@@ -66,7 +66,7 @@
          db-name :db
          hook-id :hook_id} msg
         _ (logging/info "msg:" msg)
-        doc (couch/get-document db-name doc-id :rev doc-rev)
+        doc (couch/get-document db-name doc-id doc-rev)
         __ (logging/info "doc:" doc)
         hook (couch/get-underworld-document hook-id)
         ___ (logging/info "hook:" hook)]

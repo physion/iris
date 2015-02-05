@@ -40,10 +40,10 @@
                   }"}})))
 
 (defn get-document
-  [db-name doc-id &{:keys [rev]}]
-  (if rev
-    (cl/get-document (database db-name) doc-id {:rev rev})
-    (cl/get-document (database db-name) doc-id)))
+  ([db-name doc-id]
+    (cl/get-document (database db-name) doc-id))
+  ([db-name doc-id rev]
+    (cl/get-document (database db-name) doc-id {:rev rev})))
 
 (defn put-underworld-document
   [doc]

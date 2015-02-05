@@ -13,7 +13,7 @@
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
-                 (couch/get-document ...db... ...id... :rev ...rev...) => {:foo "bar" :baz "yes!"}
+                 (couch/get-document ...db... ...id... ...rev...) => {:foo "bar" :baz "yes!"}
                  (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz "yes!"]]}
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...
@@ -24,7 +24,7 @@
                (with-fake-http [{:url url :method :delete} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id... :deleted true})) => ...receipt-doc...
                (provided
-                 (couch/get-document ...db... ...id... :rev ...rev...) => {:foo "bar" :baz "yes!"}
+                 (couch/get-document ...db... ...id... ...rev...) => {:foo "bar" :baz "yes!"}
                  (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz "yes!"]]}
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...
@@ -35,7 +35,7 @@
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
-                 (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
+                 (couch/get-document ...db... ...id... ...rev...) => ...doc...
                  (couch/get-underworld-document ...hook-id...) => {:url url}
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...
@@ -47,7 +47,7 @@
                (with-fake-http [{:url url :method :post :basic-auth [api-key api-key]} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
-                 (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
+                 (couch/get-document ...db... ...id... ...rev...) => ...doc...
                  (couch/get-underworld-document ...hook-id...) => {:url url :api_key api-key}
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...
@@ -59,7 +59,7 @@
                (with-fake-http [{:url url :method :post} response]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => (throws anything)
                (provided
-                 (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
+                 (couch/get-document ...db... ...id... ...rev...) => ...doc...
                  (couch/get-underworld-document ...hook-id...) => {:url url})))
 
        (fact "substitutes target URL from mapped document"
@@ -73,7 +73,7 @@
                                           :db      ...db...
                                           :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
-                 (couch/get-document ...db... ...id... :rev ...rev...) => doc
+                 (couch/get-document ...db... ...id... ...rev...) => doc
                  (couch/get-underworld-document ...hook-id...) => {:url url-raw}
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...)))
@@ -93,7 +93,7 @@
                                           :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
                  (mapping/get-mapping type) => {:project_id :mapped_id}
-                 (couch/get-document ...db... ...id... :rev ...rev...) => doc
+                 (couch/get-document ...db... ...id... ...rev...) => doc
                  (couch/get-underworld-document ...hook-id...) => {:url url-raw}
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...)))
@@ -113,7 +113,7 @@
                                           :db      ...db...
                                           :hook_id ...hook-id...})) => ...receipt-doc...
                (provided
-                 (couch/get-document ...db... ...id... :rev ...rev...) => doc
+                 (couch/get-document ...db... ...id... ...rev...) => doc
                  (couch/get-underworld-document ...hook-id...) => {:url url-raw :mapping {:project_id :hook_id}}
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...)))
@@ -123,7 +123,7 @@
                (with-fake-http [{:url url :method :post} {:status 201 :body "ok"}]
                                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...})) => '(...receipt...)
                (provided
-                 (couch/get-document ...db... ...id... :rev ...rev...) => ...doc...
+                 (couch/get-document ...db... ...id... ...rev...) => ...doc...
                  (couch/get-underworld-document ...hook-id...) => {:url url}
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '(...receipt...)))))
 
@@ -169,5 +169,5 @@
                (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...}) => nil
                (provided
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
-                 (couch/get-document ...db... ...id... :rev ...rev...) => {:foo "bar" :baz "yes!"}
+                 (couch/get-document ...db... ...id... ...rev...) => {:foo "bar" :baz "yes!"}
                  (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz "no!"]]}))))
