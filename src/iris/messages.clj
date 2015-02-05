@@ -58,10 +58,10 @@
 
   (logging/info "Filter" filter-list)
   (logging/info "doc" doc)
-  
+
   (if (or (nil? filter) (empty? filter-list))
     true
-    (not (some nil? (map (fn [[k r]] (re-matches (re-pattern r) ((keyword k) doc))) filter-list)))))
+    (not (some nil? (map (fn [[k r]] (when ((keyword k) doc) (re-matches (re-pattern r) ((keyword k) doc)))) filter-list)))))
 
 (defn send
   [msg]
