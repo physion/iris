@@ -30,10 +30,10 @@
                           ;(assoc :sqs-queue x-aws-sqsd-queue)
                           ;(assoc :sqs-first-received-at x-aws-sqsd-first-received-at)
                           ;(assoc :sqs-receive-count (Integer/parseInt x-aws-sqsd-receive-count)))
-                          
+
                           (let [msg-info msg]
 
-                            (logging/info "[Iris] Update received" msg-info)
+                            (logging/info "Update received" msg-info)
 
                             (let [result (messages/send msg-info)]
                               (logging/info "Webhook result " result)
