@@ -33,4 +33,7 @@
                                              (assoc :sqs-receive-count (Integer/parseInt x-aws-sqsd-receive-count)))]
 
                             (logging/info "[Iris] Update received" msg-info)
-                            (ok (messages/send msg-info))))))
+
+                            (let [result (messages/send msg-info)]
+                              (logging/info "Webhook result " result)
+                              (ok result))))))
