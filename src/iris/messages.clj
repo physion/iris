@@ -84,7 +84,6 @@
 
           (logging/info "Checking filter for " mapped)
           (when (check-filter (:filter hook) mapped)
-            (logging/info "Filter passed")
             (let [method (if (:deleted msg) http/delete http/post)]
               (logging/info "Calling" url "for" mapped)
               (call-http method url mapped doc-id doc-rev db-name hook-id (:api_key hook)))))))))
