@@ -143,7 +143,7 @@
                         :user_id   owner-id}
 
                    expected {:rel   "experiments"
-                             :owner owner-id
+                             :owner_id owner-id
                              :entity_id entity-id
                              :target_id target-id
                              }]
