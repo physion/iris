@@ -65,9 +65,11 @@
          doc-rev :doc_rev
          db-name :db
          hook-id :hook_id} msg
-
+        _ (logging/debug "msg:" msg)
         doc (couch/get-document db-name doc-id :rev doc-rev)
-        hook (couch/get-underworld-document hook-id)]
+        __ (logging/debug "doc:" doc)
+        hook (couch/get-underworld-document hook-id)
+        ___ (logging/debug "hook:" hook)]
 
     (let [existing-receipt (couch/get-receipts doc-id doc-rev hook-id)]
 
