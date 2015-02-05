@@ -55,6 +55,10 @@
 (defn check-filter
   "Check a set of filters against doc"
   [filter-list doc]
+
+  (logging/info "Filter" filter-list)
+  (logging/info "doc" doc)
+  
   (if (or (nil? filter) (empty? filter-list))
     true
     (not (some nil? (map (fn [[k r]] (re-matches (re-pattern r) ((keyword k) doc))) filter-list)))))
@@ -75,14 +79,12 @@
           (logging/info "Webhook " hook-id " already called")
           existing-receipt)
         (let [raw-url (:url hook)
-              _ (logging/info "url" raw-url)
               mapped (map-doc doc hook)
-              __ (logging/info "mapped" mapped)
-              url (substitute-url raw-url mapped)
-              ___ (logging/info "final url" url)]
+              url (substitute-url raw-url mapped)]
 
           (logging/info "Checking filter for " mapped)
           (when (check-filter (:filter hook) mapped)
+            (logging/info "Filter passed")
             (let [method (if (:deleted msg) http/delete http/post)]
               (logging/info "Calling" url "for" mapped)
               (call-http method url mapped doc-id doc-rev db-name hook-id (:api_key hook)))))))))
