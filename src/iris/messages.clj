@@ -66,9 +66,7 @@
          db-name :db
          hook-id :hook_id} msg
         doc (couch/get-document db-name doc-id doc-rev)
-        __ (logging/info "doc:" doc)
-        hook (couch/get-underworld-document hook-id)
-        ___ (logging/info "hook:" hook)]
+        hook (couch/get-underworld-document hook-id)]
 
     (let [existing-receipt (couch/get-receipts doc-id doc-rev hook-id)]
 
@@ -77,8 +75,11 @@
           (logging/info "Webhook " hook-id " already called")
           existing-receipt)
         (let [raw-url (:url hook)
+              _ (logging/info "url" raw-url)
               mapped (map-doc doc hook)
-              url (substitute-url raw-url mapped)]
+              __ (logging/info "mapped" mapped)
+              url (substitute-url raw-url mapped)
+              ___ (logging/info "final url" url)]
 
           (logging/info "Checking filter for " mapped)
           (when (check-filter (:filter hook) mapped)
