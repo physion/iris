@@ -18,4 +18,4 @@
              (provided
                (check-db anything) => true
                (cl/save-view anything iris-design-doc anything) => true
-               (cl/get-view anything "iris"  :receipts {:include_docs false} {:key [...doc-id... ...doc-rev... ...hook-id...]}) => ...result...)))
+               (cl/get-view anything "iris"  :receipts {:include_docs false :key [...doc-id... ...doc-rev... ...hook-id...]}) => ...result...)))

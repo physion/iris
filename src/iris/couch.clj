@@ -58,4 +58,4 @@
   "Checks if a receipt is present for a webhook call"
   [doc-id doc-rev hook-id]
   (receipts-view!)
-  (cl/get-view @db iris-design-doc :receipts {:include_docs false} {:key [doc-id doc-rev hook-id]}))
+  (cl/get-view @db iris-design-doc :receipts {:include_docs false :key [doc-id doc-rev hook-id]}))
