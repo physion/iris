@@ -8,11 +8,6 @@
                          :db      s/Str
                          :hook_id s/Str})
 
-(s/defschema MessageInfo (-> NewMessage
-                             (assoc :sqs-msgid s/Str)
-                             (assoc :sqs-queue s/Str)
-                             (assoc :sqs-first-received-at s/Str)
-                             (assoc :sqs-receive-count s/Str)))
 
 
 ;; NB Shared with Osiris; we should factor this into a common library

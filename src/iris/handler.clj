@@ -18,20 +18,19 @@
                          (ok "Iris!"))
 
                    (POST* "/messages" []
-                          :body [msg s/Any]
+                          :body [msg s/Any]                 ;NewMessage
                           :summary "Processes an update from Osiris"
                           :header-params [x-aws-sqsd-msgid :- s/Str
                                           x-aws-sqsd-queue :- s/Str
                                           x-aws-sqsd-first-received-at :- s/Str
                                           x-aws-sqsd-receive-count :- s/Str]
 
-                          ;(-> msg
-                          ;(assoc :sqs-msgid x-aws-sqsd-msgid)
-                          ;(assoc :sqs-queue x-aws-sqsd-queue)
-                          ;(assoc :sqs-first-received-at x-aws-sqsd-first-received-at)
-                          ;(assoc :sqs-receive-count (Integer/parseInt x-aws-sqsd-receive-count)))
 
-                          (let [msg-info msg]
+                          (let [msg-info (-> msg
+                                             (assoc :sqs-msgid x-aws-sqsd-msgid)
+                                             (assoc :sqs-queue x-aws-sqsd-queue)
+                                             (assoc :sqs-first-received-at x-aws-sqsd-first-received-at)
+                                             (assoc :sqs-receive-count (Integer/parseInt x-aws-sqsd-receive-count)))]
 
                             (logging/info "Update received" msg-info)
 
