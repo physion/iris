@@ -40,7 +40,7 @@
   [method url body doc-id doc-rev db-name hook-id api-key]
   (let [opts {:body (json/write-str body)
               :headers {"Content-Type" "application/json"
-                        "Accept" "application/json "}}
+                        "Accept" "application/json"}}
         auth-opts (if (nil? api-key) opts (assoc opts :basic-auth [api-key api-key]))
         response (method url auth-opts)]
 
