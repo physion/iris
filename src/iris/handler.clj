@@ -6,8 +6,10 @@
             [schema.coerce :as coerce]
             [iris.schema :refer [NewMessage]]
             [clojure.tools.logging :as logging]
-            [iris.messages :as messages]))
+            [iris.messages :as messages]
+            [iris.logging]))
 
+(iris.logging/setup!)
 
 ;; --- Routes --- ;;
 (defapi app

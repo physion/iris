@@ -1,7 +1,11 @@
 (ns iris.couch
   (:require [com.ashafa.clutch :as cl]
             [iris.config :as config]
-            [clojure.tools.logging :as logging]))
+            [clojure.tools.logging :as logging]
+            [iris.logging]))
+
+
+(iris.logging/setup!)
 
 
 (defn database

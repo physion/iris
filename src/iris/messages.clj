@@ -8,8 +8,11 @@
             [clojure.data.json :as json]
             [clojure.tools.logging :as logging]
             [clojure.string :as s]
-            [iris.mapping :as mapping])
+            [iris.mapping :as mapping]
+            [iris.logging])
   (:import (java.util UUID)))
+
+(iris.logging/setup!)
 
 (defn map-replace [m text]
   (reduce
