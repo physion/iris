@@ -36,5 +36,5 @@
                             (logging/debug "Osiris update received by Iris" msg-info)
 
                             (let [result (messages/send msg-info)]
-                              (logging/debug "Webhook result " result)
+                              (logging/debug "Webhook result:" result)
                               (ok result))))))

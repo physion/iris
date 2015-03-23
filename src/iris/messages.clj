@@ -88,5 +88,5 @@
             (let [method (if (:deleted msg) http/delete http/post)]
               (logging/info "Calling" url "for" mapped)
               (call-http method url mapped doc-id doc-rev db-name hook-id (:api_key hook)))
-            "No matching webhooks"                                              ;; Empty result
+            "(no matching webhooks)"                                              ;; Empty result
             ))))))
