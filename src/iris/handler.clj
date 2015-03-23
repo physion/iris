@@ -1,15 +1,14 @@
 (ns iris.handler
-  (:import (com.sun.xml.internal.bind.v2.model.core ID))
   (:require [compojure.api.sweet :refer :all]
             [ring.util.http-response :refer [ok]]
             [schema.core :as s]
-            [schema.coerce :as coerce]
             [iris.schema :refer [NewMessage]]
             [clojure.tools.logging :as logging]
             [iris.messages :as messages]
             [iris.logging]))
 
 (iris.logging/setup!)
+(logging/info "Starting Iris handler")
 
 ;; --- Routes --- ;;
 (defapi app
@@ -20,7 +19,7 @@
                          (ok "Iris!"))
 
                    (POST* "/messages" []
-                          :body [msg s/Any]                 ;NewMessage
+                          :body [msg NewMessage]
                           :summary "Processes an update from Osiris"
                           :header-params [x-aws-sqsd-msgid :- s/Str
                                           x-aws-sqsd-queue :- s/Str

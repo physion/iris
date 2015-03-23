@@ -11,7 +11,6 @@
                  [org.clojure/data.json "0.2.5"]
 
                  [com.ashafa/clutch "0.4.0"]
-                 [com.cemerick/url "0.1.1"]                 ;; For clutch
 
                  [http-kit "2.1.16"]
                  [http-kit.fake "0.2.1"]
