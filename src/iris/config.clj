@@ -16,4 +16,4 @@
                       password
                       "boom!"))
 
-(def LOGGING_HOST (System/getProperty "LOGGING_HOST"))
+(def LOGGING_HOST (or (System/getenv "LOGGING_HOST") (System/getProperty "LOGGING_HOST")))

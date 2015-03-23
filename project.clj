@@ -5,13 +5,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/core.incubator "0.1.3"]
 
-                 [compojure "1.1.8"]
-                 [metosin/compojure-api "0.16.2"]
-                 [prismatic/schema "0.2.4"]
-                 [prismatic/plumbing "0.3.3"]
-                 [metosin/ring-swagger "0.13.0"]
-                 [metosin/ring-swagger-ui "2.0.17"]
-                 [metosin/ring-http-response "0.5.0"]
+                 [metosin/compojure-api "0.18.0"]
 
                  [slingshot "0.12.1"]
 
