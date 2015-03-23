@@ -7,8 +7,6 @@
 
                  [metosin/compojure-api "0.18.0"]
 
-                 [slingshot "0.12.1"]
-
                  [ring/ring-codec "1.0.0"]
                  [org.clojure/data.json "0.2.5"]
 
