@@ -1,5 +1,6 @@
 (ns iris.test.messages
   (:require [midje.sweet :refer :all]
+            [ring.util.http-predicates :as predicates]
             [org.httpkit.fake :refer [with-fake-http]]
             [iris.messages :as msg]
             [iris.couch :as couch]
@@ -17,6 +18,7 @@
                  (couch/get-underworld-document ...hook-id...) => {:url url :filter [[:baz "yes!"]]}
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/put-underworld-document anything) => ...receipt-doc...
+                 (predicates/created? anything) => true
                  ...receipt... =contains=> {:hook_id ...hook-id... :doc_id ...id... :doc_rev ...rev... :db ...db... :type "receipt"})))
 
        (fact "DELETEs message url for deleted document "

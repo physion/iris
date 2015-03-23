@@ -3,7 +3,8 @@
   (:require [org.httpkit.client :as http]
             [iris.schema :refer [NewReceipt NewMessage Receipt]]
             [iris.couch :as couch]
-            [ring.util.http-response :refer [throw! get-type]]
+            [ring.util.http-response :refer [throw!]]
+            [ring.util.http-predicates :refer [created? accepted? ok? no-content?]]
             [org.httpkit.client :as http]
             [clojure.data.json :as json]
             [clojure.tools.logging :as logging]
@@ -11,8 +12,6 @@
             [iris.mapping :as mapping]
             [iris.logging])
   (:import (java.util UUID)))
-
-(iris.logging/setup!)
 
 (defn map-replace [m text]
   (reduce
@@ -47,7 +46,7 @@
         auth-opts (if (nil? api-key) opts (assoc opts :basic-auth [api-key api-key]))
         response (method url auth-opts)]
 
-    (if (.success? (get-type (:status @response)))
+    (if (or (ok? @response) (created? @response) (accepted? @response) (no-content? @response))
       (let [receipt {:type    "receipt"
                      :db      db-name
                      :doc_id  doc-id
