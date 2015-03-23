@@ -37,4 +37,4 @@
 
                             (let [result (messages/send msg-info)]
                               (logging/debug "Webhook result:" result)
-                              (ok {:receipts result}))))))
+                              (ok {:receipts (vec result)}))))))

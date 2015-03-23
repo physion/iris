@@ -170,7 +170,7 @@
 
        (fact "rejects message send for rejecting filter"
              (let [url "https://ovation.io/callback"]
-               (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...}) => '()
+               (msg/send {:doc_id ...id... :doc_rev ...rev... :db ...db... :hook_id ...hook-id...}) => nil
                (provided
                  (couch/get-receipts ...id... ...rev... ...hook-id...) => '()
                  (couch/get-document ...db... ...id... ...rev...) => {:foo "bar" :baz "yes!"}

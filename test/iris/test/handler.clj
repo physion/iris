@@ -23,5 +23,5 @@
 
       (:status (handler/app post)) => 200
       (provided
-        (iris.messages/send anything) => ...result...)))
+        (iris.messages/send anything) => {:id "receipt-id"})))
   )

@@ -84,9 +84,8 @@
               url (substitute-url raw-url mapped)]
 
           (logging/debug "Checking filter for " mapped)
-          (if (check-filter (:filter hook) mapped)
+          (when (check-filter (:filter hook) mapped)
             (let [method (if (:deleted msg) http/delete http/post)]
               (logging/info "Calling" url "for" mapped)
               (call-http method url mapped doc-id doc-rev db-name hook-id (:api_key hook)))
-            '()                                              ;; Empty result
             ))))))
