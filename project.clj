@@ -1,10 +1,12 @@
 (defproject iris "0.1.0-SNAPSHOT"
-  :description "Ovation update messanger"
+  :description "Ovation update messenger"
   :url "http://ovation.io"
 
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/core.incubator "0.1.3"]
 
+                 [clj-time "0.9.0"]
+                 
                  [metosin/compojure-api "0.18.0"]
 
                  [ring/ring-codec "1.0.0"]
@@ -12,7 +14,7 @@
 
                  [com.ashafa/clutch "0.4.0"]
 
-                 [http-kit "2.1.16"]
+                 [http-kit "2.1.18"]
                  [http-kit.fake "0.2.1"]
 
                  [com.newrelic.agent.java/newrelic-agent "3.11.0"] ;; NB Update javaagent string
