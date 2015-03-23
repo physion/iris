@@ -33,8 +33,8 @@
                                              (assoc :sqs-first-received-at x-aws-sqsd-first-received-at)
                                              (assoc :sqs-receive-count (Integer/parseInt x-aws-sqsd-receive-count)))]
 
-                            (logging/info "Update received" msg-info)
+                            (logging/debug "Osiris update received by Iris" msg-info)
 
                             (let [result (messages/send msg-info)]
-                              (logging/info "Webhook result " result)
+                              (logging/debug "Webhook result " result)
                               (ok result))))))

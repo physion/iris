@@ -60,9 +60,6 @@
   "Check a set of filters against doc"
   [filter-list doc]
 
-  (logging/info "Filter" filter-list)
-  (logging/info "doc" doc)
-
   (if (or (nil? filter) (empty? filter-list))
     true
     (not (some nil? (map (fn [[k r]] (when ((keyword k) doc) (re-matches (re-pattern r) ((keyword k) doc)))) filter-list)))))
@@ -86,7 +83,7 @@
               mapped (map-doc doc hook)
               url (substitute-url raw-url mapped)]
 
-          (logging/info "Checking filter for " mapped)
+          (logging/debug "Checking filter for " mapped)
           (when (check-filter (:filter hook) mapped)
             (let [method (if (:deleted msg) http/delete http/post)]
               (logging/info "Calling" url "for" mapped)
