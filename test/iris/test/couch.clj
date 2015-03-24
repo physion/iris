@@ -11,6 +11,7 @@
       (check-db db) => ...meta...
       (provided
         (couch-ready?) => false
+        (update-view!) => true
         (cl/get-database db) => ...meta...))))
 
 (facts "About receipts"
