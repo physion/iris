@@ -5,9 +5,6 @@
             [iris.logging]))
 
 
-(iris.logging/setup!)
-
-
 (defn database
   "Constructs a database URL for the given database name."
   [db-name & {:keys [username password]
@@ -19,29 +16,44 @@
     :password password))
 
 (defonce ^{:private true} db (atom (database config/COUCH_DATABASE)))
+(defonce ^{:private true} token (atom false))
 
+(defn couch-ready?
+  "True if the defined db has been checked/created"
+  []
+  @token)
 
 (def iris-design-doc "iris")
+(def view-fns (cl/view-server-fns :javascript
+                                  {:receipts {:map
+                                              "function(doc) {
+                                                if(doc.type && doc.type==='receipt') {
+                                                  emit([doc.doc_id, doc.doc_rev, doc.hook_id], null);
+                                                }
+                                              }"}}))
+
+(defn update-view! []
+  (cl/save-view @db iris-design-doc view-fns))
 
 (defn check-db
   "Creates db (a cemerick.url/url) if it doesn't exist already." ;; TODO eventually, this should become a macro wrapper with-db
   [database]
-  (logging/debug "Checking database" (dissoc database :username :password))
-  (cl/get-database database))
+  (when (not (couch-ready?))
+    (do
+      (logging/debug "Checking database" (dissoc database :username :password))
+      (let [meta (cl/get-database database)
+            view (update-view!)]
+        (swap! token not)
+        (and view meta)))))
 
 
 (defn receipts-view!
   []
-  (check-db @db)
-  (logging/debug "Creating webhooks view")
-  (cl/save-view @db iris-design-doc
-    (cl/view-server-fns :javascript
-      {:receipts {:map
-                  "function(doc) {
-                    if(doc.type && doc.type==='receipt') {
-                      emit([doc.doc_id, doc.doc_rev, doc.hook_id], null);
-                    }
-                  }"}})))
+  (when (not (couch-ready?))
+    (do
+      (check-db @db)
+      (logging/debug "Creating webhooks view")
+      (update-view!))))
 
 (defn get-document
   ([db-name doc-id]

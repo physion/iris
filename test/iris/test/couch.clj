@@ -10,12 +10,12 @@
     (let [db (database ...dbname...)]
       (check-db db) => ...meta...
       (provided
+        (couch-ready?) => false
         (cl/get-database db) => ...meta...))))
 
 (facts "About receipts"
        (fact "Retrieves receipt by [doc_id,doc_rev,hook_id]"
              (get-receipts ...doc-id... ...doc-rev... ...hook-id...) => ...result...
              (provided
-               (check-db anything) => true
-               (cl/save-view anything iris-design-doc anything) => true
+               (couch-ready?) => true
                (cl/get-view anything "iris"  :receipts {:include_docs false :key [...doc-id... ...doc-rev... ...hook-id...]}) => ...result...)))
